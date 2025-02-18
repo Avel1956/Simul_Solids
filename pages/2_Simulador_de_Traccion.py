@@ -9,7 +9,7 @@ sys.path.append(root_dir)
 # Configurar la página antes de cualquier otra operación
 st.set_page_config(
     page_title="Simulador de Tracción",
-    page_icon="💪",
+    page_icon="📈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )

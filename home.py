@@ -52,9 +52,15 @@ with apps_grid.container():
     if st.button("Abrir Simulador", key="torsion_btn"):
         st.switch_page("pages/1_Simulador_de_Torsion.py")
 
-
-
-
+with apps_grid.container():
+    st.markdown("""
+    ### ‿ Simulador de Flexión pura
+    
+    Analiza los esfuerzos y deformaciones en elementos sometidos a flexión pura.
+    """)
+    st.image("assets/flexion.png")
+    if st.button("Abrir Simulador", key="flexion_btn"):
+        st.switch_page("pages/4_Simulador_de_Flexion.py")
 
 # Footer
 st.markdown("---")
