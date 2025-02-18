@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Fuerzas en Cables - Herramienta Didáctica</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- MathJax desde cdnjs -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        },
+        startup: {
+          pageReady: () => {
+            return MathJax.startup.defaultPageReady();
+          }
+        }
+      };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Análisis de Fuerzas en Cables</h1>
+        <div class="theory-section">
+            <h2>Teoría</h2>
+            <div class="theory-content">
+                <p>Este problema involucra el análisis de una barra rígida sostenida por dos cables con diferentes propiedades. La solución requiere aplicar:</p>
+                
+                <div class="theory-step">
+                    <h3>1. Equilibrio de Fuerzas</h3>
+                    <p>La suma de fuerzas verticales debe ser cero:</p>
+                    <div class="equation">
+                        \[ F_1 + F_2 = P \]
+                        <p>Donde:</p>
+                        <ul>
+                            <li>F₁: Fuerza en el cable 1</li>
+                            <li>F₂: Fuerza en el cable 2</li>
+                            <li>P: Carga aplicada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="theory-step">
+                    <h3>2. Ley de Hooke</h3>
+                    <p>Relaciona la fuerza con la deformación en cada cable:</p>
+                    <div class="equation">
+                        \[ \sigma = E \cdot \varepsilon \]
+                        \[ F = \frac{AE\Delta L}{L} \]
+                        <p>Donde:</p>
+                        <ul>
+                            <li>E: Módulo de elasticidad</li>
+                            <li>A: Área transversal</li>
+                            <li>L: Longitud inicial</li>
+                            <li>ΔL: Cambio en longitud</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="theory-step">
+                    <h3>3. Compatibilidad de Deformaciones</h3>
+                    <p>Al ser una barra rígida, el desplazamiento vertical es igual para ambos cables:</p>
+                    <div class="equation">
+                        \[ \Delta L_1 = \Delta L_2 \]
+                        \[ \frac{F_1L_1}{E_1A_1} = \frac{F_2L_2}{E_2A_2} \]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="random" class="button-secondary">Generar Ejemplo Aleatorio</button>
+            <button id="step" class="button-secondary">Mostrar Paso a Paso</button>
+        </div>
+
+        <div class="input-section">
+            <h2>Parámetros de entrada</h2>
+            <div class="material-selection">
+                <h3>Cable 1</h3>
+                <select id="material1" title="Selecciona el material del cable 1. El módulo de elasticidad (E) determina la rigidez del material.">
+                    <option value="200e9">Acero (E = 200 GPa)</option>
+                    <option value="70e9">Aluminio (E = 70 GPa)</option>
+                    <option value="110e9">Titanio (E = 110 GPa)</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <div class="custom-input" id="custom1" style="display:none">
+                    <input type="number" id="customE1" placeholder="Módulo de Young (GPa)" 
+                           title="El módulo de Young (E) es una medida de la rigidez del material. Unidad: GPa (Gigapascales). Valores típicos: Acero=200 GPa, Aluminio=70 GPa, Titanio=110 GPa">
+                </div>
+                <input type="number" id="area1" placeholder="Área (mm²)" 
+                       title="Área de la sección transversal del cable (A). Unidad: mm² (milímetros cuadrados). A mayor área, mayor capacidad de carga. Valores típicos: 50-200 mm²">
+                <input type="number" id="length1" placeholder="Longitud (m)"
+                       title="Longitud total del cable (L). Unidad: m (metros). A mayor longitud, mayor deformación bajo la misma carga. Valores típicos: 1-3 m">
+            </div>
+            
+            <div class="material-selection">
+                <h3>Cable 2</h3>
+                <select id="material2" title="Selecciona el material del cable 2. El módulo de elasticidad (E) determina la rigidez del material.">
+                    <option value="200e9">Acero (E = 200 GPa)</option>
+                    <option value="70e9">Aluminio (E = 70 GPa)</option>
+                    <option value="110e9">Titanio (E = 110 GPa)</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+                <div class="custom-input" id="custom2" style="display:none">
+                    <input type="number" id="customE2" placeholder="Módulo de Young (GPa)"
+                           title="El módulo de Young (E) es una medida de la rigidez del material. Unidad: GPa (Gigapascales). Valores típicos: Acero=200 GPa, Aluminio=70 GPa, Titanio=110 GPa">
+                </div>
+                <input type="number" id="area2" placeholder="Área (mm²)"
+                       title="Área de la sección transversal del cable (A). Unidad: mm² (milímetros cuadrados). A mayor área, mayor capacidad de carga. Valores típicos: 50-200 mm²">
+                <input type="number" id="length2" placeholder="Longitud (m)"
+                       title="Longitud total del cable (L). Unidad: m (metros). A mayor longitud, mayor deformación bajo la misma carga. Valores típicos: 1-3 m">
+            </div>
+
+            <div class="load-section">
+                <h3>Carga</h3>
+                <input type="number" id="load" placeholder="Carga (N)"
+                       title="Fuerza aplicada en el centro de la barra (P). Unidad: N (Newtons). La carga se distribuirá entre ambos cables según su rigidez. Valores típicos: 5000-15000 N">
+            </div>
+
+            <button id="calculate">Calcular</button>
+        </div>
+
+        <div class="visualization">
+            <canvas id="diagram"></canvas>
+            <div class="diagram-legend">
+                <p>La visualización muestra la barra y los cables antes (líneas punteadas) y después (líneas sólidas) de aplicar la carga.</p>
+            </div>
+        </div>
+
+        <div class="results">
+            <h2>Proceso de Solución</h2>
+            <div class="steps-container">
+                <div id="step-by-step" class="step-content"></div>
+            </div>
+            <div id="forces" class="forces-result"></div>
+        </div>
+        <footer class="row mt-4 mb-5">
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="mb-0">
+                            <strong>Jaime Andrés Vélez Zea</strong>, Mecánica de Sólidos. 
+                            Universidad Javeriana de Cali, 2025
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

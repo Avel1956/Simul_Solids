@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Ensayos de Tracción</title>
+    <style>
+        /* --- START OF FILE styles.css --- */
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ecuacion {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.2em;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            cursor: help;
+            transition: background-color 0.3s;
+        }
+
+        .ecuacion:hover {
+            background-color: #e9ecef;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            opacity: 1 !important;
+        }
+
+        .parametro-dinamico {
+            color: #007bff;
+            font-weight: bold;
+            padding: 0 3px;
+        }
+
+        .region-elastica {
+            stroke: blue;
+        }
+
+        .region-plastica {
+            stroke: red;
+        }
+
+        #grafica {
+            height: 500px;
+            width: 100%;
+        }
+
+        .alerta-plastica {
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .pregunta {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 3px solid #007bff;
+            background-color: #f8f9fa;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .pregunta p {
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .respuesta {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+
+        .mostrar-respuesta {
+            margin-top: 5px;
+        }
+
+        .card-header.bg-info {
+            background-color: #17a2b8 !important;
+        }
+
+        footer .card {
+            background-color: #f8f9fa;
+            border: none;
+        }
+
+        .alert-info {
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+
+        ol li {
+            margin-bottom: 10px;
+        }
+
+        ol ul {
+            margin-top: 5px;
+        }
+
+        ol ul li {
+            margin-bottom: 5px;
+        }
+
+        .parametros-grupo {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .parametros-grupo h5 {
+            color: #495057;
+            font-size: 1rem;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+
+        .probeta-container {
+            position: relative;
+            width: 200px;
+            height: 300px;
+            margin: 0 auto;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            padding: 10px;
+        }
+
+        #probeta-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dimensiones-texto {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-size: 0.8rem;
+            color: #495057;
+        }
+        /* --- END OF FILE styles.css --- */
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">Simulador de Ensayos de Tracción</h1>
+
+        <!-- Panel de Instrucciones -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h4><i class="fas fa-info-circle"></i> Instrucciones de Uso</h4>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li>Seleccione un material de la lista desplegable o configure uno personalizado.</li>
+                            <li>Presione "Iniciar Ensayo" para comenzar la simulación.</li>
+                            <li>Para comparar diferentes materiales:
+                                <ul>
+                                    <li>Realice el primer ensayo hasta que se detenga o pauselo.</li>
+                                    <li>Seleccione un nuevo material.</li>
+                                    <li>Inicie un nuevo ensayo - la gráfica mostrará ambas curvas.</li>
+                                </ul>
+                            </li>
+                            <li>Use los botones de control para:
+                                <ul>
+                                    <li>Pausar: Detener temporalmente el ensayo actual</li>
+                                    <li>Reiniciar: Volver a empezar el ensayo actual</li>
+                                    <li>Exportar: Descargar los datos de todos los ensayos en formato CSV</li>
+                                </ul>
+                            </li>
+                            <li>Observe las ecuaciones y responda las preguntas de análisis durante el ensayo.</li>
+                        </ol>
+                        <div class="alert alert-info">
+                            <strong>Nota:</strong> Puede realizar hasta 5 ensayos diferentes para comparar materiales.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Panel de Control -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Control de Ensayo</h4>
+                    </div>
+                    <div class="card-body">
+                        <select id="material-select" class="form-select mb-3">
+                            <option value="">Seleccionar Material</option>
+                            <option value="acero">Acero</option>
+                            <option value="aluminio">Aluminio</option>
+                            <option value="cobre">Cobre</option>
+                            <option value="personalizado">Material Personalizado</option>
+                        </select>
+
+                        <div id="parametros-material">
+                            <input type="text" id="nombre-material" class="form-control mb-2" placeholder="Nombre del material (opcional)">
+
+                            <div class="parametros-grupo">
+                                <h5 class="mb-3">Geometría de la Probeta</h5>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select id="tipo-seccion" class="form-select mb-2" data-bs-toggle="tooltip" title="Seleccione la forma de la sección transversal">
+                                            <option value="circular">Sección Circular</option>
+                                            <option value="cuadrada">Sección Cuadrada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="params-circular">
+                                    <input type="number" id="diametro" class="form-control mb-2" placeholder="Diámetro (mm)" value="11.28"
+                                        data-bs-toggle="tooltip" title="Diámetro de la sección circular (11.28 mm da un área de 100 mm²)">
+                                </div>
+                                <div id="params-cuadrada" class="d-none">
+                                    <input type="number" id="lado" class="form-control mb-2" placeholder="Lado (mm)" value="10"
+                                        data-bs-toggle="tooltip" title="Lado de la sección cuadrada (10 mm da un área de 100 mm²)">
+                                </div>
+                                <input type="number" id="longitud-inicial" class="form-control mb-2" placeholder="Longitud inicial (mm)" value="50"
+                                    data-bs-toggle="tooltip" title="Longitud inicial de la probeta (L₀)">
+
+                                <!-- Visualización de la probeta -->
+                                <div class="probeta-container mt-3">
+                                    <canvas id="probeta-canvas" width="200" height="300"></canvas>
+                                    <div class="dimensiones-texto"></div>
+                                </div>
+                            </div>
+
+                            <div class="parametros-grupo">
+                                <h5 class="mb-3">Propiedades del Material</h5>
+                                <input type="number" id="modulo-young" class="form-control mb-2" placeholder="Módulo de Young (GPa)"
+                                    data-bs-toggle="tooltip" title="Módulo de elasticidad del material (E). Determina la rigidez del material">
+                                <input type="number" id="limite-elastico" class="form-control mb-2" placeholder="Límite Elástico (MPa)"
+                                    data-bs-toggle="tooltip" title="Esfuerzo máximo que puede soportar el material sin deformación permanente">
+                                <input type="number" id="resistencia-traccion" class="form-control mb-2" placeholder="Resistencia a la Tracción (MPa)"
+                                    data-bs-toggle="tooltip" title="Esfuerzo máximo que puede soportar el material antes de la falla">
+                                <input type="number" id="coef-poisson" class="form-control mb-2" placeholder="Coeficiente de Poisson" step="0.01" value="0.3"
+                                    data-bs-toggle="tooltip" title="Relación entre la deformación lateral y longitudinal (ν)">
+                            </div>
+
+                            <div class="parametros-grupo">
+                                <h5 class="mb-3">Parámetros del Ensayo</h5>
+                                <input type="number" id="velocidad-deformacion" class="form-control mb-2" placeholder="Velocidad de deformación (s⁻¹)"
+                                    step="0.001" value="0.001" data-bs-toggle="tooltip" title="Velocidad de aplicación de la deformación">
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button id="iniciar" class="btn btn-primary">Iniciar Ensayo</button>
+                            <button id="pausar" class="btn btn-warning" disabled>Pausar</button>
+                            <button id="reiniciar" class="btn btn-secondary" disabled>Reiniciar</button>
+                            <button id="exportar" class="btn btn-success">Exportar Datos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfica -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="grafica"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Ecuaciones y Resultados -->
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>Ecuaciones</h4>
+                    </div>
+                    <div class="card-body" id="ecuaciones">
+                        <!-- Las ecuaciones se insertarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Preguntas de Análisis</h4>
+                    </div>
+                    <div class="card-body" id="preguntas">
+                        <!-- Las preguntas se insertarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer con atribución -->
+        <footer class="row mt-4 mb-5">
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="mb-0">
+                            <strong>Jaime Andrés Vélez Zea</strong>, Mecánica de Sólidos.
+                            Universidad Javeriana de Cali, 2025
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* --- START OF FILE script.js --- */
+        class SimuladorTraccion {
+            constructor() {
+                this.materiales = {
+                    acero: {
+                        nombre: 'Acero',
+                        moduloYoung: 210,
+                        limiteElastico: 250,
+                        resistenciaTraccion: 400,
+                        coefPoisson: 0.3,
+                        // Propiedades geométricas por defecto
+                        tipoSeccion: 'circular',
+                        diametro: 11.28, // mm (para área ≈ 100 mm²)
+                        longitudInicial: 50, // mm
+                        velocidadDeformacion: 0.001 // s⁻¹
+                    },
+                    aluminio: {
+                        nombre: 'Aluminio',
+                        moduloYoung: 70,
+                        limiteElastico: 95,
+                        resistenciaTraccion: 110,
+                        coefPoisson: 0.33,
+                        tipoSeccion: 'circular',
+                        diametro: 11.28,
+                        longitudInicial: 50,
+                        velocidadDeformacion: 0.001
+                    },
+                    cobre: {
+                        nombre: 'Cobre',
+                        moduloYoung: 120,
+                        limiteElastico: 70,
+                        resistenciaTraccion: 220,
+                        coefPoisson: 0.34,
+                        tipoSeccion: 'circular',
+                        diametro: 11.28,
+                        longitudInicial: 50,
+                        velocidadDeformacion: 0.001
+                    }
+                };
+
+                this.ensayoActual = null;
+                this.datos = [];
+                this.ensayosRealizados = [];
+                this.MAX_ENSAYOS = 5;
+                this.intervalId = null;
+                this.enRegionPlastica = false;
+
+                this.inicializarEventos();
+                this.inicializarGrafica();
+                this.inicializarTooltips();
+                this.inicializarVisualizacionProbeta();
+            }
+
+            inicializarEventos() {
+                document.getElementById('material-select').addEventListener('change', this.cambiarMaterial.bind(this));
+                document.getElementById('iniciar').addEventListener('click', this.iniciarEnsayo.bind(this));
+                document.getElementById('pausar').addEventListener('click', this.pausarEnsayo.bind(this));
+                document.getElementById('reiniciar').addEventListener('click', this.reiniciarEnsayo.bind(this));
+                document.getElementById('exportar').addEventListener('click', this.exportarDatos.bind(this));
+
+                // Agregar listeners para actualizar tooltips cuando cambien los valores
+                ['diametro', 'lado'].forEach(id => {
+                    document.getElementById(id)?.addEventListener('input', () => {
+                        this.actualizarTooltipsGeometria();
+                    });
+                });
+
+                document.getElementById('tipo-seccion')?.addEventListener('change', () => {
+                    const tipoSeccion = document.getElementById('tipo-seccion').value;
+                    document.getElementById('params-circular').classList.toggle('d-none', tipoSeccion !== 'circular');
+                    document.getElementById('params-cuadrada').classList.toggle('d-none', tipoSeccion === 'circular');
+                    this.actualizarTooltipsGeometria();
+                    this.actualizarVisualizacionProbeta();
+                });
+            }
+
+            inicializarGrafica() {
+                const layout = {
+                    title: 'Curva Esfuerzo-Deformación',
+                    xaxis: {
+                        title: 'Deformación Unitaria (ε)',
+                        showgrid: true
+                    },
+                    yaxis: {
+                        title: 'Esfuerzo (σ) [MPa]',
+                        showgrid: true
+                    }
+                };
+
+                Plotly.newPlot('grafica', [], layout);
+            }
+
+            inicializarTooltips() {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+
+            inicializarVisualizacionProbeta() {
+                this.canvas = document.getElementById('probeta-canvas');
+                if (!this.canvas) {
+                    console.warn('Canvas no encontrado');
+                    return;
+                }
+
+                this.ctx = this.canvas.getContext('2d');
+
+                // Asegurarse de que el canvas tenga el tamaño correcto
+                const setCanvasSize = () => {
+                    const container = this.canvas.parentElement;
+                    const width = 200;
+                    const height = 300;
+
+                    this.canvas.style.width = width + 'px';
+                    this.canvas.style.height = height + 'px';
+
+                    // Ajustar por el pixel ratio del dispositivo
+                    const dpr = window.devicePixelRatio || 1;
+                    this.canvas.width = width * dpr;
+                    this.canvas.height = height * dpr;
+
+                    // Escalar el contexto
+                    this.ctx.scale(dpr, dpr);
+                };
+
+                setCanvasSize();
+
+                // Agregar listeners para actualización en tiempo real
+                ['tipo-seccion', 'diametro', 'lado', 'longitud-inicial'].forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) {
+                        elemento.addEventListener('input', () => {
+                            this.actualizarVisualizacionProbeta();
+                        });
+                    }
+                });
+
+                // Manejar cambios en el tamaño de la ventana
+                window.addEventListener('resize', setCanvasSize);
+
+                this.actualizarVisualizacionProbeta();
+            }
+
+            actualizarVisualizacionProbeta() {
+                if (!this.canvas || !this.ctx) {
+                    console.warn('Canvas no inicializado');
+                    return;
+                }
+
+                const width = this.canvas.width / (window.devicePixelRatio || 1);
+                const height = this.canvas.height / (window.devicePixelRatio || 1);
+
+                // Limpiar canvas
+                this.ctx.clearRect(0, 0, width, height);
+
+                const esCircular = document.getElementById('tipo-seccion')?.value === 'circular';
+                const longitud = parseFloat(document.getElementById('longitud-inicial')?.value) || 50;
+                const dimension = esCircular ?
+                    parseFloat(document.getElementById('diametro')?.value) || 11.28 :
+                    parseFloat(document.getElementById('lado')?.value) || 10;
+
+                // Escalar dimensiones para visualización
+                const escala = Math.min(width * 0.4 / dimension, height * 0.8 / longitud);
+                const seccionWidth = dimension * escala;
+                const seccionHeight = longitud * escala;
+
+                // Posicionar en el centro
+                const x = width / 2;
+                const y = (height - seccionHeight) / 2;
+
+                // Dibujar probeta
+                this.ctx.beginPath();
+                this.ctx.strokeStyle = '#007bff';
+                this.ctx.lineWidth = 2;
+
+                if (esCircular) {
+                    this.dibujarCilindro(this.ctx, x, y, seccionWidth/2, seccionHeight);
+                } else {
+                    this.dibujarPrisma(this.ctx, x - seccionWidth/2, y, seccionWidth, seccionHeight);
+                }
+
+                // Agregar cotas
+                this.dibujarCotas(this.ctx, x, y, seccionWidth, seccionHeight, dimension, longitud, esCircular);
+
+                // Actualizar texto de dimensiones
+                const dimensionesTexto = document.querySelector('.dimensiones-texto');
+                if (dimensionesTexto) {
+                    dimensionesTexto.innerHTML = esCircular ?
+                        `Ø${dimension.toFixed(1)} mm × ${longitud} mm` :
+                        `${dimension} mm × ${dimension} mm × ${longitud} mm`;
+                }
+            }
+
+            dibujarCilindro(ctx, x, y, radio, altura) {
+                // Líneas laterales primero
+                ctx.beginPath();
+                ctx.moveTo(x - radio, y);
+                ctx.lineTo(x - radio, y + altura);
+                ctx.moveTo(x + radio, y);
+                ctx.lineTo(x + radio, y + altura);
+                ctx.stroke();
+
+                // Elipse superior
+                ctx.beginPath();
+                ctx.ellipse(x, y, radio, radio/3, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Elipse inferior
+                ctx.beginPath();
+                ctx.ellipse(x, y + altura, radio, radio/3, 0, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            dibujarPrisma(ctx, x, y, ancho, altura) {
+                // Cara frontal
+                ctx.strokeRect(x, y, ancho, altura);
+
+                // Perspectiva
+                const profundidad = ancho * 0.3;
+
+                // Líneas de profundidad superiores
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + profundidad, y - profundidad);
+                ctx.lineTo(x + ancho + profundidad, y - profundidad);
+                ctx.lineTo(x + ancho, y);
+                ctx.stroke();
+
+                // Líneas de profundidad laterales
+                ctx.beginPath();
+                ctx.moveTo(x + ancho, y);
+                ctx.lineTo(x + ancho + profundidad, y - profundidad);
+                ctx.lineTo(x + ancho + profundidad, y + altura - profundidad);
+                ctx.lineTo(x + ancho, y + altura);
+                ctx.stroke();
+            }
+
+            dibujarCotas(ctx, x, y, width, height, dimension, longitud, esCircular) {
+                ctx.save();
+                ctx.strokeStyle = '#666';
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+
+                // Cota de longitud
+                const cotaOffset = 20;
+                ctx.beginPath();
+                ctx.moveTo(x + width/2 + cotaOffset, y);
+                ctx.lineTo(x + width/2 + cotaOffset, y + height);
+                // Flechas y texto
+                this.dibujarFlecha(ctx, x + width/2 + cotaOffset, y, 0);
+                this.dibujarFlecha(ctx, x + width/2 + cotaOffset, y + height, Math.PI);
+                ctx.fillText(`${longitud} mm`, x + width/2 + cotaOffset + 15, y + height/2);
+                ctx.stroke();
+
+                // Cota de sección
+                const dimText = esCircular ? `Ø${dimension.toFixed(1)}` : dimension.toString();
+                ctx.beginPath();
+                ctx.moveTo(x - width/2, y - cotaOffset);
+                ctx.lineTo(x + width/2, y - cotaOffset);
+                this.dibujarFlecha(ctx, x - width/2, y - cotaOffset, -Math.PI/2);
+                this.dibujarFlecha(ctx, x + width/2, y - cotaOffset, Math.PI/2);
+                ctx.fillText(`${dimText} mm`, x, y - cotaOffset - 10);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            dibujarFlecha(ctx, x, y, angulo) {
+                const tamanoFlecha = 5;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angulo);
+                ctx.beginPath();
+                ctx.moveTo(-tamanoFlecha, -tamanoFlecha);
+                ctx.lineTo(0, 0);
+                ctx.lineTo(-tamanoFlecha, tamanoFlecha);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            calcularAreaInicial() {
+                const tipoSeccion = document.getElementById('tipo-seccion').value;
+                if (tipoSeccion === 'circular') {
+                    const diametro = parseFloat(document.getElementById('diametro').value);
+                    return Math.PI * Math.pow(diametro/2, 2);
+                } else {
+                    const lado = parseFloat(document.getElementById('lado').value);
+                    return Math.pow(lado, 2);
+                }
+            }
+
+            actualizarTooltipsGeometria() {
+                const tipoSeccion = document.getElementById('tipo-seccion').value;
+                const diametroInput = document.getElementById('diametro');
+                const ladoInput = document.getElementById('lado');
+
+                if (tipoSeccion === 'circular') {
+                    const diametro = parseFloat(diametroInput.value) || 11.28;
+                    const area = Math.PI * Math.pow(diametro/2, 2);
+                    diametroInput.setAttribute('data-bs-original-title',
+                        `Diámetro de la sección circular (${diametro} mm da un área de ${area.toFixed(1)} mm²)`);
+                } else {
+                    const lado = parseFloat(ladoInput.value) || 10;
+                    const area = Math.pow(lado, 2);
+                    ladoInput.setAttribute('data-bs-original-title',
+                        `Lado de la sección cuadrada (${lado} mm da un área de ${area} mm²)`);
+                }
+            }
+
+            cambiarMaterial(event) {
+                const materialSeleccionado = event.target.value;
+
+                if (materialSeleccionado && materialSeleccionado !== 'personalizado') {
+                    const material = this.materiales[materialSeleccionado];
+                    // Actualizar todos los campos con los valores del material seleccionado
+                    document.getElementById('nombre-material').value = material.nombre;
+                    document.getElementById('modulo-young').value = material.moduloYoung;
+                    document.getElementById('limite-elastico').value = material.limiteElastico;
+                    document.getElementById('resistencia-traccion').value = material.resistenciaTraccion;
+                    document.getElementById('coef-poisson').value = material.coefPoisson;
+                    document.getElementById('tipo-seccion').value = material.tipoSeccion;
+
+                    if (material.tipoSeccion === 'circular') {
+                        document.getElementById('diametro').value = material.diametro;
+                        document.getElementById('params-circular').classList.remove('d-none');
+                        document.getElementById('params-cuadrada').classList.add('d-none');
+                    } else {
+                        document.getElementById('lado').value = material.lado;
+                        document.getElementById('params-circular').classList.add('d-none');
+                        document.getElementById('params-cuadrada').classList.remove('d-none');
+                    }
+
+                    document.getElementById('longitud-inicial').value = material.longitudInicial;
+                    document.getElementById('velocidad-deformacion').value = material.velocidadDeformacion;
+                } else if (materialSeleccionado === 'personalizado') {
+                    // Limpiar campos para material personalizado
+                    document.getElementById('nombre-material').value = `Mat${this.ensayosRealizados.length + 1}`;
+                    document.getElementById('modulo-young').value = '';
+                    document.getElementById('limite-elastico').value = '';
+                    document.getElementById('resistencia-traccion').value = '';
+                    document.getElementById('coef-poisson').value = '0.3';
+                    document.getElementById('velocidad-deformacion').value = '0.001';
+                }
+
+                this.actualizarTooltipsGeometria();
+                this.actualizarVisualizacionProbeta();
+            }
+
+            obtenerParametrosMaterial() {
+                // Obtener valores actuales de los campos, independientemente del tipo de material
+                return {
+                    nombre: document.getElementById('nombre-material').value.trim() || 'Material sin nombre',
+                    moduloYoung: parseFloat(document.getElementById('modulo-young').value),
+                    limiteElastico: parseFloat(document.getElementById('limite-elastico').value),
+                    resistenciaTraccion: parseFloat(document.getElementById('resistencia-traccion').value),
+                    coefPoisson: parseFloat(document.getElementById('coef-poisson').value),
+                    tipoSeccion: document.getElementById('tipo-seccion').value,
+                    areaInicial: this.calcularAreaInicial(),
+                    longitudInicial: parseFloat(document.getElementById('longitud-inicial').value),
+                    velocidadDeformacion: parseFloat(document.getElementById('velocidad-deformacion').value)
+                };
+            }
+
+            iniciarEnsayo() {
+                if (this.ensayosRealizados.length >= this.MAX_ENSAYOS) {
+                    alert(`Máximo número de ensayos (${this.MAX_ENSAYOS}) alcanzado. Por favor, exporte los datos antes de continuar.`);
+                    return;
+                }
+
+                const material = this.obtenerParametrosMaterial();
+                if (!material) {
+                    alert('Por favor, seleccione un material');
+                    return;
+                }
+
+                this.ensayoActual = {
+                    material: material,
+                    datos: [],
+                    tiempoInicio: Date.now(),
+                    nombre: material.nombre
+                };
+
+                document.getElementById('iniciar').disabled = true;
+                document.getElementById('pausar').disabled = false;
+                document.getElementById('reiniciar').disabled = false;
+
+                this.enRegionPlastica = false;
+                this.simularEnsayo();
+            }
+
+            simularEnsayo() {
+                let deformacionUnitaria = 0;
+                const material = this.ensayoActual.material;
+                const incremento = material.velocidadDeformacion * 0.2; // 0.2 segundos entre actualizaciones
+
+                this.intervalId = setInterval(() => {
+                    deformacionUnitaria += incremento;
+                    const esfuerzo = this.calcularEsfuerzo(deformacionUnitaria);
+                    const areaInstantanea = this.calcularAreaInstantanea(deformacionUnitaria);
+
+                    this.ensayoActual.datos.push({
+                        deformacion: deformacionUnitaria,
+                        esfuerzo: esfuerzo,
+                        area: areaInstantanea,
+                        tiempo: Date.now() - this.ensayoActual.tiempoInicio
+                    });
+
+                    this.actualizarGrafica();
+                    this.actualizarEcuaciones(deformacionUnitaria, esfuerzo, areaInstantanea);
+                    this.actualizarPreguntas(deformacionUnitaria, esfuerzo, areaInstantanea);
+
+                    if (this.debeDetenerSimulacion(deformacionUnitaria, esfuerzo)) {
+                        this.pausarEnsayo();
+                    }
+                }, 200);
+            }
+
+            calcularEsfuerzo(deformacion) {
+                const material = this.ensayoActual.material;
+                const esfuerzoElastico = deformacion * material.moduloYoung * 1000; // Convertir GPa a MPa
+
+                if (esfuerzoElastico > material.limiteElastico) {
+                    if (!this.enRegionPlastica) {
+                        this.enRegionPlastica = true;
+                        this.mostrarAlertaPlastica();
+                    }
+                    // Modelo elastoplástico ideal
+                    return material.limiteElastico;
+                }
+
+                return esfuerzoElastico;
+            }
+
+            calcularAreaInstantanea(deformacion) {
+                const material = this.ensayoActual.material;
+                // A = A₀ * exp(-2νε) para deformación elástica
+                return material.areaInicial * Math.exp(-2 * material.coefPoisson * deformacion);
+            }
+
+            actualizarGrafica() {
+                const traces = [];
+
+                // Agregar ensayos anteriores
+                this.ensayosRealizados.forEach((ensayo, index) => {
+                    traces.push({
+                        x: ensayo.datos.map(d => d.deformacion),
+                        y: ensayo.datos.map(d => d.esfuerzo),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {
+                            dash: 'solid',
+                            width: 2,
+                            color: this.obtenerColorMaterial(index)
+                        },
+                        name: this.obtenerNombreMaterial(ensayo)
+                    });
+                });
+
+                // Agregar ensayo actual si existe
+                if (this.ensayoActual && this.ensayoActual.datos.length > 0) {
+                    traces.push({
+                        x: this.ensayoActual.datos.map(d => d.deformacion),
+                        y: this.ensayoActual.datos.map(d => d.esfuerzo),
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {
+                            color: this.obtenerColorMaterial(this.ensayosRealizados.length),
+                            width: 3
+                        },
+                        name: `${this.obtenerNombreMaterial(this.ensayoActual)} (Actual)`
+                    });
+                }
+
+                const layout = {
+                    title: 'Curva Esfuerzo-Deformación',
+                    xaxis: {
+                        title: 'Deformación Unitaria (ε)',
+                        showgrid: true,
+                        gridcolor: '#e6e6e6',
+                        zeroline: true,
+                        zerolinecolor: '#969696',
+                        tickformat: '.3f'
+                    },
+                    yaxis: {
+                        title: 'Esfuerzo (σ) [MPa]',
+                        showgrid: true,
+                        gridcolor: '#e6e6e6',
+                        zeroline: true,
+                        zerolinecolor: '#969696'
+                    },
+                    plot_bgcolor: '#fff',
+                    paper_bgcolor: '#fff',
+                    showlegend: true,
+                    legend: {
+                        x: 1,
+                        xanchor: 'right',
+                        y: 1
+                    }
+                };
+
+                // Usar Plotly.react en lugar de newPlot para actualizar la gráfica sin borrarla
+                Plotly.react('grafica', traces, layout);
+            }
+
+            obtenerNombreMaterial(ensayo) {
+                if (ensayo.material.personalizado) {
+                    return `${ensayo.material.nombre} (E=${ensayo.material.moduloYoung}GPa)`;
+                }
+                return ensayo.material.nombre;
+            }
+
+            obtenerColorMaterial(index) {
+                // Paleta de colores para diferentes materiales
+                const colores = [
+                    '#1f77b4', // azul
+                    '#ff7f0e', // naranja
+                    '#2ca02c', // verde
+                    '#d62728', // rojo
+                    '#9467bd'  // morado
+                ];
+                return colores[index % colores.length];
+            }
+
+            actualizarEcuaciones(deformacion, esfuerzo, area) {
+                const material = this.ensayoActual.material;
+                const longitudActual = material.longitudInicial * (1 + deformacion);
+                const deltaL = longitudActual - material.longitudInicial;
+
+                const ecuacionesDiv = document.getElementById('ecuaciones');
+                ecuacionesDiv.innerHTML = `
+                    <div class="ecuacion" title="Esfuerzo = Fuerza / Área inicial">
+                        σ = F/A₀ = <span class="parametro-dinamico">${esfuerzo.toFixed(2)}</span> MPa
+                    </div>
+                    <div class="ecuacion" title="Deformación unitaria = Cambio en longitud / Longitud inicial">
+                        ε = ΔL/L₀ = <span class="parametro-dinamico">${deformacion.toFixed(4)}</span>
+                    </div>
+                    <div class="ecuacion" title="Módulo de Young = Esfuerzo / Deformación (en región elástica)">
+                        E = σ/ε = <span class="parametro-dinamico">${(esfuerzo/deformacion/1000).toFixed(2)}</span> GPa
+                    </div>
+                    <div class="ecuacion" title="Área instantánea considerando deformación lateral">
+                        A = A₀e^(-2νε) = <span class="parametro-dinamico">${area.toFixed(2)}</span> mm²
+                    </div>
+                    <div class="ecuacion" title="Cambio en longitud">
+                        ΔL = L - L₀ = <span class="parametro-dinamico">${deltaL.toFixed(2)}</span> mm
+                    </div>
+                    <div class="ecuacion" title="Longitud actual de la probeta">
+                        L = L₀(1 + ε) = <span class="parametro-dinamico">${longitudActual.toFixed(2)}</span> mm
+                    </div>
+                    <div class="ecuacion" title="Velocidad de deformación">
+                        έ = <span class="parametro-dinamico">${material.velocidadDeformacion.toFixed(4)}</span> s⁻¹
+                    </div>
+                `;
+            }
+
+            actualizarPreguntas(deformacion, esfuerzo, area) {
+                const preguntasDiv = document.getElementById('preguntas');
+                const material = this.ensayoActual.material;
+
+                preguntasDiv.innerHTML = `
+                    <div class="pregunta">
+                        <p>¿En qué región se encuentra el material?</p>
+                        <button class="btn btn-sm btn-outline-primary mostrar-respuesta">Mostrar respuesta</button>
+                        <div class="respuesta d-none">
+                            <strong>${this.enRegionPlastica ? 'Región Plástica' : 'Región Elástica'}</strong>
+                        </div>
+                    </div>
+                    <div class="pregunta">
+                        <p>¿Cuál es el porcentaje de deformación actual?</p>
+                        <button class="btn btn-sm btn-outline-primary mostrar-respuesta">Mostrar respuesta</button>
+                        <div class="respuesta d-none">
+                            <strong>${(deformacion * 100).toFixed(2)}%</strong>
+                        </div>
+                    </div>
+                    <div class="pregunta">
+                        <p>¿Se recuperará el material si se retira la carga?</p>
+                        <button class="btn btn-sm btn-outline-primary mostrar-respuesta">Mostrar respuesta</button>
+                        <div class="respuesta d-none">
+                            <strong>${this.enRegionPlastica ? 'No completamente' : 'Sí, completamente'}</strong>
+                            <p class="mt-2">
+                                ${this.enRegionPlastica ?
+                                    'El material ha superado su límite elástico y presentará deformación permanente.' :
+                                    'El material aún está en su región elástica y volverá a su forma original.'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                // Agregar eventos a los botones de mostrar respuesta
+                preguntasDiv.querySelectorAll('.mostrar-respuesta').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const respuesta = e.target.nextElementSibling;
+                        respuesta.classList.remove('d-none');
+                        e.target.classList.add('d-none');
+                    });
+                });
+            }
+
+            mostrarAlertaPlastica() {
+                const alerta = document.createElement('div');
+                alerta.className = 'alerta-plastica';
+                alerta.textContent = '¡Atención! El material ha entrado en región plástica';
+                document.querySelector('.card-body').appendChild(alerta);
+            }
+
+            pausarEnsayo() {
+                clearInterval(this.intervalId);
+                document.getElementById('pausar').disabled = true;
+                document.getElementById('iniciar').disabled = false;
+
+                // Guardar el ensayo actual en ensayosRealizados si existe y no está ya guardado
+                if (this.ensayoActual && this.ensayoActual.datos.length > 0) {
+                    const yaGuardado = this.ensayosRealizados.some(ensayo =>
+                        ensayo.tiempoInicio === this.ensayoActual.tiempoInicio
+                    );
+
+                    if (!yaGuardado) {
+                        this.ensayosRealizados.push({...this.ensayoActual});
+                    }
+                }
+            }
+
+            reiniciarEnsayo() {
+                this.pausarEnsayo();
+                // No borrar el ensayo de ensayosRealizados, solo limpiar el actual
+                this.ensayoActual = null;
+                this.enRegionPlastica = false;
+                this.actualizarGrafica();
+                document.getElementById('iniciar').disabled = false;
+                document.querySelector('.alerta-plastica')?.remove();
+            }
+
+            exportarDatos() {
+                const datos = this.ensayosRealizados.concat(this.ensayoActual).filter(Boolean);
+                let csv = 'Ensayo,Deformación,Esfuerzo (MPa)\n';
+
+                datos.forEach((ensayo, index) => {
+                    ensayo.datos.forEach(punto => {
+                        csv += `${index + 1},${punto.deformacion},${punto.esfuerzo}\n`;
+                    });
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ensayos_traccion.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            debeDetenerSimulacion(deformacion, esfuerzo) {
+                const material = this.ensayoActual.material;
+                if (deformacion > 0.2 || esfuerzo >= material.resistenciaTraccion) {
+                    // Asegurarse de guardar el ensayo cuando se detiene
+                    this.ensayosRealizados.push({...this.ensayoActual});
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        // Inicializar la aplicación
+        const simulador = new SimuladorTraccion();
+        /* --- END OF FILE script.js --- */
+    </script>
+</body>
+</html>

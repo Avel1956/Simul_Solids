@@ -1,0 +1,36 @@
+Para ejecutar la aplicación:
+
+1. Descarga todos los archivos en una carpeta:
+   - index.html
+   - styles.css
+   - script.js
+
+2. Elige uno de estos métodos para ejecutar la aplicación:
+
+   Método A - Usando Python:
+   1. Abre una terminal o línea de comandos
+   2. Navega hasta la carpeta donde guardaste los archivos
+   3. Ejecuta uno de estos comandos según tu versión de Python:
+      - Python 3: python -m http.server 8000
+      - Python 2: python -m SimpleHTTPServer 8000
+   4. Abre tu navegador y ve a: http://localhost:8000
+
+   Método B - Usando Node.js:
+   1. Instala Node.js desde https://nodejs.org
+   2. Abre una terminal o línea de comandos
+   3. Ejecuta: npm install -g http-server
+   4. Navega hasta la carpeta donde guardaste los archivos
+   5. Ejecuta: http-server
+   6. Abre tu navegador y ve a: http://localhost:8080
+
+   Método C - Usando Visual Studio Code:
+   1. Instala Visual Studio Code
+   2. Instala la extensión "Live Server"
+   3. Abre la carpeta del proyecto en VS Code
+   4. Click derecho en index.html
+   5. Selecciona "Open with Live Server"
+
+Notas importantes:
+- La aplicación necesita un servidor web para funcionar correctamente
+- No abras el archivo HTML directamente con el navegador
+- Asegúrate de que todos los archivos estén en la misma carpeta 

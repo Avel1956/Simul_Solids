@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Torsión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Panel de Entrada -->
+        <div class="panel input-panel">
+            <h2>Parámetros de Entrada</h2>
+            
+            <section class="input-section">
+                <h3>Geometría</h3>
+                <div class="input-group">
+                    <label for="length">Longitud (m):</label>
+                    <input type="number" id="length" min="0.1" step="0.1" value="1.0">
+                </div>
+                <div class="input-group">
+                    <label for="outerDiameter">Diámetro exterior (m):</label>
+                    <input type="number" id="outerDiameter" min="0.01" step="0.01" value="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="innerDiameter">Diámetro interior (m):</label>
+                    <input type="number" id="innerDiameter" min="0" step="0.01" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="segments">Número de segmentos:</label>
+                    <input type="number" id="segments" min="4" step="1" value="10">
+                </div>
+            </section>
+
+            <section class="input-section">
+                <h3>Material</h3>
+                <div class="input-group">
+                    <label for="elasticModulus">Módulo de elasticidad (GPa):</label>
+                    <input type="number" id="elasticModulus" min="1" step="1" value="200">
+                </div>
+                <div class="input-group">
+                    <label for="shearModulus">Módulo de corte (GPa):</label>
+                    <input type="number" id="shearModulus" min="1" step="1" value="80">
+                </div>
+                <div class="input-group">
+                    <label for="poissonRatio">Coeficiente de Poisson:</label>
+                    <input type="number" id="poissonRatio" min="0" max="0.5" step="0.01" value="0.3">
+                </div>
+            </section>
+
+            <section class="input-section">
+                <h3>Carga</h3>
+                <div class="input-group">
+                    <label for="torque">Momento torsor (N⋅m):</label>
+                    <input type="number" id="torque" step="1" value="100">
+                </div>
+            </section>
+
+            <section class="input-section">
+                <h3>Visualización</h3>
+                <div class="input-group">
+                    <label>Escala de deformación:</label>
+                    <input type="number" id="deformationScale" min="0" max="10" step="0.1" value="1">
+                </div>
+                <button id="reset" class="button">Reiniciar</button>
+            </section>
+        </div>
+
+        <!-- Panel de Visualización -->
+        <div class="panel visualization-panel">
+            <canvas id="torsionCanvas"></canvas>
+            <div class="view-controls">
+                <button id="frontView">Vista Frontal</button>
+                <button id="sideView">Vista Lateral</button>
+                <button id="topView">Vista Superior</button>
+            </div>
+            <div class="visualization-controls">
+                <div class="view-options">
+                    <label><input type="checkbox" id="showOriginal" checked> Estado Original</label>
+                    <label><input type="checkbox" id="showDeformed" checked> Estado Deformado</label>
+                </div>
+                <label><input type="checkbox" id="showStress" checked> Mostrar distribución de esfuerzos</label>
+                <label><input type="checkbox" id="showGrid" checked> Mostrar malla</label>
+                <label><input type="checkbox" id="showMeasurements" checked> Mostrar mediciones</label>
+            </div>
+            <div class="color-legend">
+                <h4>Esfuerzo Cortante</h4>
+                <div class="legend-gradient"></div>
+                <div class="legend-labels">
+                    <span>0 MPa</span>
+                    <span id="maxStress">Max MPa</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Teoría -->
+        <div class="panel theory-panel">
+            <h2>Teoría y Resultados</h2>
+            <div class="results-section">
+                <h3>Resultados Calculados</h3>
+                <div id="results">
+                    <!-- Los resultados se mostrarán aquí -->
+                </div>
+            </div>
+            <div class="theory-section">
+                <h3>Ecuaciones Fundamentales</h3>
+                <div class="equation-container">
+                    <!-- Las ecuaciones se agregarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/TorsionCalculator.js"></script>
+    <script src="js/TorsionVisualizer.js"></script>
+    <script src="js/UIController.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
