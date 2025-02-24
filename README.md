@@ -187,9 +187,6 @@ apps/
 2. "Resistencia de Materiales" - Timoshenko
 3. "Mechanical Behavior of Materials" - Meyers, Chawla
 
-### Recursos Online
-- [MIT OpenCourseWare - Mechanics of Materials](https://ocw.mit.edu)
-- [NIST Materials Database](https://www.nist.gov/mml/materials-measurement-laboratory)
 
 ## Contribuciones y Desarrollo
 
