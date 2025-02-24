@@ -11,7 +11,7 @@ La torsión es un fenómeno mecánico donde un momento torsor produce una deform
 
 - **Ley de Hooke para Torsión**: 
   
-  $$ \gamma = \frac{\tau}{G} $$
+  $$\gamma = \frac{\tau}{G}$$
   
   donde $\gamma$ es la deformación angular, $\tau$ es el esfuerzo cortante, y $G$ es el módulo de cortante
 
