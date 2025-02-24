@@ -11,22 +11,22 @@ La torsión es un fenómeno mecánico donde un momento torsor produce una deform
 
 - **Ley de Hooke para Torsión**: 
   
-  $$ \gamma = \frac{\tau}{G} $$
+  $$\gamma = \frac{\tau}{G}$$
   
   donde $\gamma$ es la deformación angular, $\tau$ es el esfuerzo cortante, y $G$ es el módulo de cortante
 
 - **Distribución de Esfuerzos**: 
   
-  $$ \tau = \frac{T \cdot r}{J} $$
+  $$\tau = \frac{T \cdot r}{J}$$
   
   - $T$: Momento torsor
   - $r$: Distancia al eje neutro
   - $J$: Momento polar de inercia
-  - Para sección circular: $$ J = \frac{\pi d^4}{32} $$
+  - Para sección circular: $$J = \frac{\pi d^4}{32}$$
 
 - **Ángulo de Torsión**: 
   
-  $$ \theta = \frac{TL}{JG} $$
+  $$\theta = \frac{TL}{JG}$$
   
   donde $L$ es la longitud del elemento
 
@@ -42,7 +42,7 @@ La tracción estudia el comportamiento de materiales bajo cargas axiales. Concep
 
 - **Ley de Hooke**: 
   
-  $$ \sigma = E\varepsilon $$
+  $$\sigma = E\varepsilon$$
   
   - $\sigma$: Esfuerzo normal
   - $E$: Módulo de elasticidad
@@ -50,7 +50,7 @@ La tracción estudia el comportamiento de materiales bajo cargas axiales. Concep
 
 - **Deformación Unitaria**: 
   
-  $$ \varepsilon = \frac{\Delta L}{L_0} $$
+  $$\varepsilon = \frac{\Delta L}{L_0}$$
   
   donde $\Delta L$ es el cambio en longitud y $L_0$ es la longitud inicial
 
@@ -75,7 +75,7 @@ La flexión ocurre cuando se aplican momentos que causan curvatura en el element
 
 - **Ecuación de la Flexión**: 
   
-  $$ \sigma = \frac{My}{I} $$
+  $$\sigma = \frac{My}{I}$$
   
   - $M$: Momento flector
   - $y$: Distancia al eje neutro
@@ -83,13 +83,13 @@ La flexión ocurre cuando se aplican momentos que causan curvatura en el element
 
 - **Deformación por Flexión**: 
   
-  $$ \varepsilon = \frac{y}{\rho} $$
+  $$\varepsilon = \frac{y}{\rho}$$
   
   donde $\rho$ es el radio de curvatura
 
 - **Momento de Inercia**:
-  - Rectangular: $$ I = \frac{bh^3}{12} $$
-  - Circular: $$ I = \frac{\pi d^4}{64} $$
+  - Rectangular: $$I = \frac{bh^3}{12}$$
+  - Circular: $$I = \frac{\pi d^4}{64}$$
 
 #### Aplicaciones
 - Diseño de vigas
