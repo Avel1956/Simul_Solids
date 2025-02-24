@@ -9,17 +9,26 @@ Una plataforma web interactiva que ofrece simulaciones avanzadas de fenómenos f
 #### Teoría Fundamental
 La torsión es un fenómeno mecánico donde un momento torsor produce una deformación angular en un elemento. Los principios fundamentales incluyen:
 
-- **Ley de Hooke para Torsión**: \[ \gamma = \frac{\tau}{G} \]
-  donde γ es la deformación angular, τ es el esfuerzo cortante, y G es el módulo de cortante
+- **Ley de Hooke para Torsión**: 
+  
+  $$ \gamma = \frac{\tau}{G} $$
+  
+  donde $\gamma$ es la deformación angular, $\tau$ es el esfuerzo cortante, y $G$ es el módulo de cortante
 
-- **Distribución de Esfuerzos**: \[ \tau = \frac{T \cdot r}{J} \]
-  - T: Momento torsor
-  - r: Distancia al eje neutro
-  - J: Momento polar de inercia
-  - Para sección circular: \[ J = \frac{\pi d^4}{32} \]
+- **Distribución de Esfuerzos**: 
+  
+  $$ \tau = \frac{T \cdot r}{J} $$
+  
+  - $T$: Momento torsor
+  - $r$: Distancia al eje neutro
+  - $J$: Momento polar de inercia
+  - Para sección circular: $$ J = \frac{\pi d^4}{32} $$
 
-- **Ángulo de Torsión**: \[ \theta = \frac{TL}{JG} \]
-  donde L es la longitud del elemento
+- **Ángulo de Torsión**: 
+  
+  $$ \theta = \frac{TL}{JG} $$
+  
+  donde $L$ es la longitud del elemento
 
 #### Aplicaciones Prácticas
 - Diseño de ejes de transmisión
@@ -31,13 +40,19 @@ La torsión es un fenómeno mecánico donde un momento torsor produce una deform
 #### Teoría Fundamental
 La tracción estudia el comportamiento de materiales bajo cargas axiales. Conceptos clave:
 
-- **Ley de Hooke**: \[ \sigma = E\varepsilon \]
-  - σ: Esfuerzo normal
-  - E: Módulo de elasticidad
-  - ε: Deformación unitaria
+- **Ley de Hooke**: 
+  
+  $$ \sigma = E\varepsilon $$
+  
+  - $\sigma$: Esfuerzo normal
+  - $E$: Módulo de elasticidad
+  - $\varepsilon$: Deformación unitaria
 
-- **Deformación Unitaria**: \[ \varepsilon = \frac{\Delta L}{L_0} \]
-  donde ΔL es el cambio en longitud y L₀ es la longitud inicial
+- **Deformación Unitaria**: 
+  
+  $$ \varepsilon = \frac{\Delta L}{L_0} $$
+  
+  donde $\Delta L$ es el cambio en longitud y $L_0$ es la longitud inicial
 
 - **Diagrama Esfuerzo-Deformación**:
   - Región elástica
@@ -58,17 +73,23 @@ La tracción estudia el comportamiento de materiales bajo cargas axiales. Concep
 #### Teoría Fundamental
 La flexión ocurre cuando se aplican momentos que causan curvatura en el elemento. Principios básicos:
 
-- **Ecuación de la Flexión**: \[ \sigma = \frac{My}{I} \]
-  - M: Momento flector
-  - y: Distancia al eje neutro
-  - I: Momento de inercia
+- **Ecuación de la Flexión**: 
+  
+  $$ \sigma = \frac{My}{I} $$
+  
+  - $M$: Momento flector
+  - $y$: Distancia al eje neutro
+  - $I$: Momento de inercia
 
-- **Deformación por Flexión**: \[ \varepsilon = \frac{y}{\rho} \]
-  donde ρ es el radio de curvatura
+- **Deformación por Flexión**: 
+  
+  $$ \varepsilon = \frac{y}{\rho} $$
+  
+  donde $\rho$ es el radio de curvatura
 
 - **Momento de Inercia**:
-  - Rectangular: \[ I = \frac{bh^3}{12} \]
-  - Circular: \[ I = \frac{\pi d^4}{64} \]
+  - Rectangular: $$ I = \frac{bh^3}{12} $$
+  - Circular: $$ I = \frac{\pi d^4}{64} $$
 
 #### Aplicaciones
 - Diseño de vigas
