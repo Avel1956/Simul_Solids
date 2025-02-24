@@ -1,71 +1,106 @@
-# Simulaciones de Ingeniería
+# Simulaciones de Ingeniería Mecánica
 
-Una plataforma web interactiva que ofrece diversas simulaciones de fenómenos de ingeniería mecánica, desarrollada con Streamlit.
+Una plataforma web interactiva que ofrece simulaciones avanzadas de fenómenos fundamentales en ingeniería mecánica, desarrollada con Streamlit. Esta herramienta sirve tanto como simulador práctico como recurso educativo para el estudio de la mecánica de materiales.
 
-## Simulaciones Disponibles
+## Fundamentos Teóricos y Simulaciones Disponibles
 
 ### 1. Simulador de Torsión
-- Visualización 3D interactiva de deformación torsional
-- Cálculo de esfuerzos y deformaciones
-- Análisis paramétrico con diferentes geometrías y materiales
-- Visualización de distribución de esfuerzos
 
-#### Teoría de Torsión
-La torsión es la acción de torcer un objeto debido a un par de fuerzas aplicadas en direcciones opuestas. En elementos cilíndricos, la torsión genera esfuerzos cortantes que varían linealmente desde el eje neutro hasta la superficie exterior. La fórmula básica para el esfuerzo cortante debido a la torsión es:
+#### Teoría Fundamental
+La torsión es un fenómeno mecánico donde un momento torsor produce una deformación angular en un elemento. Los principios fundamentales incluyen:
 
-\[ \tau = \frac{T \cdot r}{J} \]
+- **Ley de Hooke para Torsión**: \[ \gamma = \frac{\tau}{G} \]
+  donde γ es la deformación angular, τ es el esfuerzo cortante, y G es el módulo de cortante
 
-donde:
-- \( \tau \) es el esfuerzo cortante
-- \( T \) es el momento torsor
-- \( r \) es la distancia desde el eje neutro
-- \( J \) es el momento polar de inercia
+- **Distribución de Esfuerzos**: \[ \tau = \frac{T \cdot r}{J} \]
+  - T: Momento torsor
+  - r: Distancia al eje neutro
+  - J: Momento polar de inercia
+  - Para sección circular: \[ J = \frac{\pi d^4}{32} \]
 
-### 2. Generador de Indeterminaciones
-- Análisis de fuerzas en cables que soportan una barra rígida
-- Cálculo de fuerzas y deformaciones en cada cable
-- Visualización del sistema y su deformación
-- Permite el uso de diferentes materiales y longitudes de cable
+- **Ángulo de Torsión**: \[ \theta = \frac{TL}{JG} \]
+  donde L es la longitud del elemento
 
-#### Teoría de Indeterminaciones
-En sistemas estructurales, una indeterminación estática ocurre cuando hay más incógnitas que ecuaciones de equilibrio disponibles. Para resolver estos sistemas, se utilizan métodos adicionales como la compatibilidad de deformaciones y las propiedades de los materiales.
+#### Aplicaciones Prácticas
+- Diseño de ejes de transmisión
+- Análisis de elementos mecánicos rotativos
+- Dimensionamiento de elementos de máquinas
 
-### 3. Simulador de Tracción
-- Analiza los esfuerzos y deformaciones en elementos sometidos a tracción
-- Visualiza la curva esfuerzo-deformación
-- Calcula parámetros clave
+### 2. Simulador de Tracción
 
-#### Teoría de Tracción
-La tracción es la acción de estirar un objeto aplicando fuerzas en direcciones opuestas. El esfuerzo normal debido a la tracción se calcula como:
+#### Teoría Fundamental
+La tracción estudia el comportamiento de materiales bajo cargas axiales. Conceptos clave:
 
-\[ \sigma = \frac{F}{A} \]
+- **Ley de Hooke**: \[ \sigma = E\varepsilon \]
+  - σ: Esfuerzo normal
+  - E: Módulo de elasticidad
+  - ε: Deformación unitaria
 
-donde:
-- \( \sigma \) es el esfuerzo normal
-- \( F \) es la fuerza aplicada
-- \( A \) es el área de la sección transversal
+- **Deformación Unitaria**: \[ \varepsilon = \frac{\Delta L}{L_0} \]
+  donde ΔL es el cambio en longitud y L₀ es la longitud inicial
 
-### 4. Simulador de Flexión
-- Analiza los esfuerzos y deformaciones en elementos sometidos a flexión pura
-- Visualiza la distribución de esfuerzos
+- **Diagrama Esfuerzo-Deformación**:
+  - Región elástica
+  - Punto de fluencia
+  - Región plástica
+  - Resistencia última
+  - Fractura
 
-#### Teoría de Flexión
-La flexión ocurre cuando un momento flector se aplica a una viga, causando que se doble. El esfuerzo normal debido a la flexión se calcula como:
+#### Propiedades Mecánicas Calculadas
+- Módulo de elasticidad (E)
+- Resistencia a la fluencia (Sy)
+- Resistencia última (Su)
+- Ductilidad
+- Tenacidad
 
-\[ \sigma = \frac{M \cdot y}{I} \]
+### 3. Simulador de Flexión
 
-donde:
-- \( \sigma \) es el esfuerzo normal
-- \( M \) es el momento flector
-- \( y \) es la distancia desde el eje neutro
-- \( I \) es el momento de inercia de área
+#### Teoría Fundamental
+La flexión ocurre cuando se aplican momentos que causan curvatura en el elemento. Principios básicos:
 
-## Requisitos
+- **Ecuación de la Flexión**: \[ \sigma = \frac{My}{I} \]
+  - M: Momento flector
+  - y: Distancia al eje neutro
+  - I: Momento de inercia
 
-- Python 3.8 o superior
-- pip (gestor de paquetes de Python)
+- **Deformación por Flexión**: \[ \varepsilon = \frac{y}{\rho} \]
+  donde ρ es el radio de curvatura
 
-## Instalación
+- **Momento de Inercia**:
+  - Rectangular: \[ I = \frac{bh^3}{12} \]
+  - Circular: \[ I = \frac{\pi d^4}{64} \]
+
+#### Aplicaciones
+- Diseño de vigas
+- Análisis estructural
+- Cálculo de deflexiones
+
+### 4. Generador de Indeterminaciones
+
+#### Teoría Fundamental
+Los sistemas estáticamente indeterminados requieren análisis adicional más allá de las ecuaciones de equilibrio:
+
+- **Ecuaciones de Compatibilidad**
+- **Método de Superposición**
+- **Teorema de Castigliano**
+
+#### Principios de Análisis
+1. Identificación del grado de indeterminación
+2. Ecuaciones de equilibrio
+3. Ecuaciones de compatibilidad
+4. Solución del sistema de ecuaciones
+
+## Instalación y Configuración
+
+### Requisitos del Sistema
+- Python 3.8+
+- Bibliotecas principales:
+  - Streamlit
+  - NumPy
+  - Matplotlib
+  - Three.js (para visualizaciones 3D)
+
+### Proceso de Instalación
 
 1. Clonar el repositorio:
 ```bash
@@ -73,82 +108,81 @@ git clone [url-del-repositorio]
 cd [nombre-del-directorio]
 ```
 
-2. Instalar las dependencias:
+2. Crear y activar entorno virtual (recomendado):
+```bash
+python -m venv venv
+# En Windows:
+venv\Scripts\activate
+# En Unix/MacOS:
+source venv/bin/activate
+```
+
+3. Instalar dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Uso
+## Guía de Uso
 
-1. Ejecutar la aplicación:
+### Iniciar la Aplicación
 ```bash
 streamlit run home.py
 ```
 
-2. Abrir el navegador web en:
-```
-http://localhost:8501
-```
+### Ejemplos Prácticos
 
-## Estructura del Proyecto
+#### Análisis de Torsión
+1. Seleccionar geometría del elemento
+2. Ingresar propiedades del material
+3. Aplicar momento torsor
+4. Analizar distribución de esfuerzos
 
+#### Ensayo de Tracción
+1. Seleccionar material
+2. Definir dimensiones de la probeta
+3. Aplicar carga
+4. Analizar curva esfuerzo-deformación
+
+## Arquitectura del Software
+
+### Estructura Modular
 ```
-.
-├── apps/
-│   ├── torsion/
-│   │   ├── app.py
-│   │   ├── torsion_calculator.py
-│   │   └── torsion_visualizer.py
-│   │   └── __init__.py
-│   ├── indeterminacion/
-│   │   ├── app.py
-│   │   ├── indeterminacion_calculator.py
-│   │   └── indeterminacion_visualizer.py
-│   │   └── __init__.py
-│   └── __init__.py
-├── pages/
-│   └── 1_Simulador_de_Torsion.py
-│   └── 2_Simulador_de_Traccion.py
-│   └── 3_Generador_de_Indeterminaciones.py
-│   └── 4_Simulador_de_Flexion.py
-├── .streamlit/
-│   └── config.toml
-├── home.py
-├── requirements.txt
-├── assets/
-│   ├── flexion.png
-│   ├── indeterminacion.png
-│   ├── torsion.png
-│   └── traccion.png
-├── README.md
-└── styles.css
+apps/
+├── módulo/
+│   ├── calculator.py    # Lógica de cálculo
+│   ├── visualizer.py    # Visualización
+│   └── app.py          # Interfaz de usuario
 ```
 
-## Características
+### Patrones de Diseño
+- Modelo-Vista-Controlador (MVC)
+- Factory Method para creación de simulaciones
+- Strategy para algoritmos de cálculo
 
-- Interfaz de usuario intuitiva y responsive
-- Visualizaciones 3D interactivas
-- Cálculos en tiempo real
-- Documentación integrada con ecuaciones y teoría
-- Diseño modular para fácil extensión
+## Referencias y Recursos Adicionales
 
-## Próximas Funcionalidades
+### Libros Recomendados
+1. "Mecánica de Materiales" - Beer, Johnston, DeWolf
+2. "Resistencia de Materiales" - Timoshenko
+3. "Mechanical Behavior of Materials" - Meyers, Chawla
 
-- Más simulaciones de fenómenos mecánicos
-- Exportación de resultados
-- Comparación de diferentes casos
-- Biblioteca de materiales predefinidos
+### Recursos Online
+- [MIT OpenCourseWare - Mechanics of Materials](https://ocw.mit.edu)
+- [NIST Materials Database](https://www.nist.gov/mml/materials-measurement-laboratory)
 
-## Contribuir
+## Contribuciones y Desarrollo
 
-Si deseas contribuir al proyecto:
+### Guías de Contribución
+1. Fork del repositorio
+2. Crear rama de feature
+3. Implementar cambios
+4. Documentar código
+5. Crear Pull Request
 
-1. Haz un Fork del repositorio
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
-3. Haz commit de tus cambios (`git commit -am 'Añadir nueva funcionalidad'`)
-4. Haz push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crea un Pull Request
+### Estándares de Código
+- PEP 8 para Python
+- Documentación con docstrings
+- Tests unitarios requeridos
 
 ## Licencia
-
-Este proyecto está licenciado bajo los términos de la licencia MIT.
+Este proyecto está bajo la Licencia MIT. Ver el archivo LICENSE para más detalles.
