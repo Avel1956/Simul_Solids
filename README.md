@@ -175,17 +175,6 @@ apps/
 │   └── app.py          # Interfaz de usuario
 ```
 
-### Patrones de Diseño
-- Modelo-Vista-Controlador (MVC)
-- Factory Method para creación de simulaciones
-- Strategy para algoritmos de cálculo
-
-## Referencias y Recursos Adicionales
-
-### Libros Recomendados
-1. "Mecánica de Materiales" - Beer, Johnston, DeWolf
-2. "Resistencia de Materiales" - Timoshenko
-3. "Mechanical Behavior of Materials" - Meyers, Chawla
 
 
 ## Contribuciones y Desarrollo
