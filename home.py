@@ -54,7 +54,7 @@ with apps_grid.container():
 
 with apps_grid.container():
     st.markdown("""
-    ### stream Simulador de Flexión pura
+    ### Simulador de Flexión pura
     
     Analiza los esfuerzos y deformaciones en elementos sometidos a flexión pura.
     """)
