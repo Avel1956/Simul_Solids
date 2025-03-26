@@ -54,13 +54,24 @@ with apps_grid.container():
 
 with apps_grid.container():
     st.markdown("""
-    ### ‿ Simulador de Flexión pura
+    ### stream Simulador de Flexión pura
     
     Analiza los esfuerzos y deformaciones en elementos sometidos a flexión pura.
     """)
     st.image("assets/flexion.png")
     if st.button("Abrir Simulador", key="flexion_btn"):
         st.switch_page("pages/4_Simulador_de_Flexion.py")
+
+with apps_grid.container():
+    st.markdown("""
+    ### ⭕ Simulador del Círculo de Mohr
+    
+    Analiza y visualiza la transformación de esfuerzos en un elemento,
+    calcula esfuerzos principales y esfuerzo cortante máximo.
+    """)
+    st.image("assets/mohr.png")
+    if st.button("Abrir Simulador", key="mohr_btn"):
+        st.switch_page("pages/5_Simulador_de_Mohr.py")
 
 # Footer
 st.markdown("---")

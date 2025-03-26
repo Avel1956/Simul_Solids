@@ -111,6 +111,42 @@ Los sistemas estáticamente indeterminados requieren análisis adicional más al
 3. Ecuaciones de compatibilidad
 4. Solución del sistema de ecuaciones
 
+### 5. Simulador del Círculo de Mohr
+
+#### Teoría Fundamental
+El Círculo de Mohr es una representación gráfica del estado de esfuerzos en un punto que permite visualizar la transformación de esfuerzos. Los conceptos clave incluyen:
+
+- **Transformación de Esfuerzos**:
+  
+  $$\sigma_x' = \frac{\sigma_x + \sigma_y}{2} + \frac{\sigma_x - \sigma_y}{2}\cos(2\theta) + \tau_{xy}\sin(2\theta)$$
+  
+  $$\tau_{xy}' = -\frac{\sigma_x - \sigma_y}{2}\sin(2\theta) + \tau_{xy}\cos(2\theta)$$
+
+- **Esfuerzos Principales**:
+  
+  $$\sigma_{1,2} = \frac{\sigma_x + \sigma_y}{2} \pm \sqrt{\left(\frac{\sigma_x - \sigma_y}{2}\right)^2 + \tau_{xy}^2}$$
+
+- **Esfuerzo Cortante Máximo**:
+  
+  $$\tau_{max} = \sqrt{\left(\frac{\sigma_x - \sigma_y}{2}\right)^2 + \tau_{xy}^2}$$
+
+- **Ángulo Principal**:
+  
+  $$\theta_p = \frac{1}{2}\tan^{-1}\left(\frac{2\tau_{xy}}{\sigma_x - \sigma_y}\right)$$
+
+#### Características del Simulador
+- Visualización interactiva del Círculo de Mohr
+- Cálculo de esfuerzos principales y cortante máximo
+- Transformación de esfuerzos para cualquier ángulo
+- Representación gráfica de estados de esfuerzo
+
+#### Aplicaciones
+- Análisis de falla en materiales
+- Diseño de elementos estructurales
+- Análisis de concentración de esfuerzos
+- Determinación de planos críticos
+- Estudio de estados de esfuerzo complejos
+
 ## Instalación y Configuración
 
 ### Requisitos del Sistema
