@@ -73,6 +73,18 @@ with apps_grid.container():
     if st.button("Abrir Simulador", key="mohr_btn"):
         st.switch_page("pages/5_Simulador_de_Mohr.py")
 
+# Simulador de Diagramas de Viga
+with apps_grid.container():
+    st.markdown("""
+    ### 📊 Simulador de Diagramas de Viga
+    
+    Genera diagramas de fuerza cortante y momento flector para vigas
+    con diferentes apoyos y cargas (puntuales y distribuidas).
+    """)
+    st.image("assets/beam_diagram.png") # Assuming this is the filename
+    if st.button("Abrir Simulador", key="beam_diagram_btn"):
+        st.switch_page("pages/6_Simulador_de_Diagramas_de_Viga.py")
+
 # Footer
 st.markdown("---")
 st.markdown("Jaime Andrés Vélez, Universidad Javeriana de Cali- 2025")

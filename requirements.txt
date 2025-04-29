@@ -4,3 +4,4 @@ numpy>=1.24.0
 pandas>=2.1.0
 streamlit-extras>=0.3.6
 matplotlib>=3.0
+sympy>=1.12 # Or a specific version if needed
