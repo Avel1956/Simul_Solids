@@ -146,12 +146,29 @@ def main():
                     else:
                          st.write(step) # Fallback for other types
 
-            # Display Equations in Two Formats
-            st.markdown("**Ecuaciones:**")
+            # Display Sign Conventions and Equations
+            st.markdown("**Ecuaciones y Convenciones de Signos:**")
+            
+            # Sign Conventions
+            with st.expander("Ver Convenciones de Signos", expanded=True):
+                st.markdown("""
+                **Convenciones de Signos:**
+                1. **Cargas:**
+                   - Cargas positivas (+) son hacia abajo
+                   - Cargas negativas (-) son hacia arriba
+                
+                2. **Fuerza Cortante (V):**
+                   - V positivo (+): hacia abajo en la cara izquierda, hacia arriba en la cara derecha
+                   - Una reacción hacia arriba genera cortante negativo
+                
+                3. **Momento Flector (M):**
+                   - M positivo (+): horario en la cara izquierda, antihorario en la cara derecha
+                   - Relación: dM/dx = -V
+                """)
             
             # Ecuaciones por Tramos (Student Format)
             with st.expander("Ver Ecuaciones por Tramos", expanded=True):
-                st.markdown("Estas son las ecuaciones divididas por tramos, como se resuelve tradicionalmente:")
+                st.markdown("Estas son las ecuaciones divididas por tramos:")
                 if 'tramos_equations' in results:
                     for i, tramo in enumerate(results['tramos_equations'], 1):
                         st.markdown(f"**Tramo {i}** ({tramo['interval']})")

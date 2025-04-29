@@ -180,28 +180,43 @@ def calculate_beam_diagrams(params):
 
 
     # --- Define Shear V(x) using NUMERICAL reaction values ---
-    # V(x) = R_A - integral(w(x)) dx - P*Heaviside(x-p_pos)
-    V_expr_numeric = reactions_numeric.get(R_A, 0) - integrate(w_expr, (x, 0, x))
+    # V(x) = -R_A + integral(w(x)) dx + P*Heaviside(x-p_pos) + R_B*Heaviside(x-L)
+    # Note: Sign convention: positive V is downward on left face, upward on right face
+    V_expr_numeric = -reactions_numeric.get(R_A, 0)  # Left reaction (negative because upward reaction creates downward shear)
+    
+    # Add distributed load effect (positive w is downward)
+    if w_load['magnitude'] != 0:
+        # Integrate w(x) from 0 to x, but only within the loaded region
+        w_integral = integrate(w_expr, (x, 0, x))
+        V_expr_numeric = V_expr_numeric + w_integral
+
+    # Add point load effect (positive P is downward)
     if p_load['magnitude'] != 0:
-        V_expr_numeric = V_expr_numeric - p_load['magnitude'] * Heaviside(x - p_load['position'])
+        V_expr_numeric = V_expr_numeric + p_load['magnitude'] * Heaviside(x - p_load['position'])
+
+    # Add right reaction (if not free end)
+    if support_right != 'Libre':
+        V_expr_numeric = V_expr_numeric - reactions_numeric.get(R_B, 0) * Heaviside(x - L)
 
     calculation_steps.append("**4. Ecuación de Fuerza Cortante V(x):**")
-    # Display the symbolic version with symbols for reactions if possible, or the numeric one
-    # Let's keep displaying the one with symbolic reactions for clarity in the steps
-    V_expr_symbolic = reactions.get(R_A, 0) - integrate(w_expr, (x, 0, x))
+    # Display the symbolic version
+    V_expr_symbolic = -reactions.get(R_A, 0)
+    if w_load['magnitude'] != 0:
+        V_expr_symbolic = V_expr_symbolic + integrate(w_expr, (x, 0, x))
     if p_load['magnitude'] != 0:
-         V_expr_symbolic = V_expr_symbolic - p_load['magnitude'] * Heaviside(x - p_load['position'])
+        V_expr_symbolic = V_expr_symbolic + p_load['magnitude'] * Heaviside(x - p_load['position'])
+    if support_right != 'Libre':
+        V_expr_symbolic = V_expr_symbolic - reactions.get(R_B, 0) * Heaviside(x - L)
     calculation_steps.append(f"V(x) = {sympy.latex(V_expr_symbolic)}")
 
-
     # --- Define Moment M(x) using NUMERICAL reaction values ---
-    # M(x) = M_A + integral(V(x)) dx
-    # IMPORTANT: Integrate the NUMERIC V_expr for consistency in lambdify
-    M_expr_numeric = reactions_numeric.get(M_A, 0) + integrate(V_expr_numeric, (x, 0, x))
+    # M(x) = M_A - integral(V(x)) dx
+    # Note: Sign convention: positive M is clockwise on left face, counterclockwise on right face
+    M_expr_numeric = reactions_numeric.get(M_A, 0) - integrate(V_expr_numeric, (x, 0, x))
 
     calculation_steps.append("**5. Ecuación de Momento Flector M(x):**")
     # Display the symbolic version
-    M_expr_symbolic = reactions.get(M_A, 0) + integrate(V_expr_symbolic, (x, 0, x))
+    M_expr_symbolic = reactions.get(M_A, 0) - integrate(V_expr_symbolic, (x, 0, x))
     calculation_steps.append(f"M(x) = {sympy.latex(M_expr_symbolic)}")
 
 
@@ -280,36 +295,39 @@ def calculate_beam_diagrams(params):
 
         # Build V equation for this tramo
         V_terms = []
-        # Add reaction at x=0
+        # Add negative reaction at x=0 (upward reaction creates downward shear)
         if start_x >= 0:
-            V_terms.append(f"{reactions_numeric[R_A]:.2f}")
+            V_terms.append(f"-{reactions_numeric[R_A]:.2f}")
 
-        # Subtract distributed load effect
+        # Add distributed load effect (positive w is downward)
         if w_load['magnitude'] != 0:
             if start_x >= w_load['start']:
                 # Full effect of previous segment
                 prev_width = min(start_x, w_load['end']) - w_load['start']
                 if prev_width > 0:
-                    V_terms.append(f"- {w_load['magnitude']:.2f}({prev_width:.2f})")
+                    V_terms.append(f"+ {w_load['magnitude']:.2f}({prev_width:.2f})")
             # Current segment effect
             if start_x < w_load['end'] and end_x > w_load['start']:
-                V_terms.append(f"- {w_load['magnitude']:.2f}(x - {max(start_x, w_load['start']):.2f})")
+                V_terms.append(f"+ {w_load['magnitude']:.2f}(x - {max(start_x, w_load['start']):.2f})")
 
-        # Subtract point load if it's before this segment
+        # Add point load if it's before this segment (positive P is downward)
         if p_load['magnitude'] != 0 and start_x > p_load['position']:
-            V_terms.append(f"- {p_load['magnitude']:.2f}")
+            V_terms.append(f"+ {p_load['magnitude']:.2f}")
 
         tramo_info['V_eq'] = "V(x) = " + " ".join(V_terms)
 
         # Build M equation for this tramo
         M_terms = []
-        # Add reaction moment
-        if start_x >= 0:
-            M_terms.append(f"{reactions_numeric[R_A]:.2f}x")
-            if M_A in reactions_numeric:
-                M_terms.append(f"+ {reactions_numeric[M_A]:.2f}")
+        # Add initial moment
+        if M_A in reactions_numeric:
+            M_terms.append(f"{reactions_numeric[M_A]:.2f}")
 
-        # Subtract distributed load effect
+        # Add negative integral of shear (dM/dx = -V)
+        if start_x >= 0:
+            # Reaction contribution
+            M_terms.append(f"+ {reactions_numeric[R_A]:.2f}x")
+
+        # Add distributed load effect
         if w_load['magnitude'] != 0:
             if start_x >= w_load['start']:
                 # Full effect of previous segment
@@ -321,7 +339,7 @@ def calculate_beam_diagrams(params):
                 x0 = max(start_x, w_load['start'])
                 M_terms.append(f"- {w_load['magnitude']:.2f}(x - {x0:.2f})²/2")
 
-        # Subtract point load effect if it's before this segment
+        # Add point load effect if it's before this segment
         if p_load['magnitude'] != 0 and start_x > p_load['position']:
             M_terms.append(f"- {p_load['magnitude']:.2f}(x - {p_load['position']:.2f})")
 
