@@ -259,6 +259,75 @@ def calculate_beam_diagrams(params):
              moment_values = np.nan_to_num(moment_values) # Convert NaNs to 0
 
 
+    # Generate equations by tramos
+    tramos_equations = []
+    # First tramo: from x=0 to first distributed load or point load
+    x_points = []
+    if w_load['magnitude'] != 0:
+        x_points.extend([w_load['start'], w_load['end']])
+    if p_load['magnitude'] != 0:
+        x_points.append(p_load['position'])
+    x_points = sorted(list(set([0, L] + x_points)))  # Add 0 and L, remove duplicates, sort
+
+    for i in range(len(x_points) - 1):
+        start_x = x_points[i]
+        end_x = x_points[i+1]
+        tramo_info = {
+            'interval': f"{start_x:.2f} ≤ x ≤ {end_x:.2f}",
+            'V_eq': "",
+            'M_eq': ""
+        }
+
+        # Build V equation for this tramo
+        V_terms = []
+        # Add reaction at x=0
+        if start_x >= 0:
+            V_terms.append(f"{reactions_numeric[R_A]:.2f}")
+
+        # Subtract distributed load effect
+        if w_load['magnitude'] != 0:
+            if start_x >= w_load['start']:
+                # Full effect of previous segment
+                prev_width = min(start_x, w_load['end']) - w_load['start']
+                if prev_width > 0:
+                    V_terms.append(f"- {w_load['magnitude']:.2f}({prev_width:.2f})")
+            # Current segment effect
+            if start_x < w_load['end'] and end_x > w_load['start']:
+                V_terms.append(f"- {w_load['magnitude']:.2f}(x - {max(start_x, w_load['start']):.2f})")
+
+        # Subtract point load if it's before this segment
+        if p_load['magnitude'] != 0 and start_x > p_load['position']:
+            V_terms.append(f"- {p_load['magnitude']:.2f}")
+
+        tramo_info['V_eq'] = "V(x) = " + " ".join(V_terms)
+
+        # Build M equation for this tramo
+        M_terms = []
+        # Add reaction moment
+        if start_x >= 0:
+            M_terms.append(f"{reactions_numeric[R_A]:.2f}x")
+            if M_A in reactions_numeric:
+                M_terms.append(f"+ {reactions_numeric[M_A]:.2f}")
+
+        # Subtract distributed load effect
+        if w_load['magnitude'] != 0:
+            if start_x >= w_load['start']:
+                # Full effect of previous segment
+                prev_width = min(start_x, w_load['end']) - w_load['start']
+                if prev_width > 0:
+                    M_terms.append(f"- {w_load['magnitude']:.2f}({prev_width:.2f})x")
+            # Current segment effect
+            if start_x < w_load['end'] and end_x > w_load['start']:
+                x0 = max(start_x, w_load['start'])
+                M_terms.append(f"- {w_load['magnitude']:.2f}(x - {x0:.2f})²/2")
+
+        # Subtract point load effect if it's before this segment
+        if p_load['magnitude'] != 0 and start_x > p_load['position']:
+            M_terms.append(f"- {p_load['magnitude']:.2f}(x - {p_load['position']:.2f})")
+
+        tramo_info['M_eq'] = "M(x) = " + " ".join(M_terms)
+        tramos_equations.append(tramo_info)
+
     results = {
         'reactions': {str(k): float(N(v)) for k, v in reactions.items()}, # Store original reactions as floats
         'shear_eq': V_expr_symbolic, # Store the symbolic equation for display
@@ -266,6 +335,7 @@ def calculate_beam_diagrams(params):
         'x_values': x_vals,
         'shear_values': shear_values, # Store the final numerical values
         'moment_values': moment_values,
-        'calculation_steps': calculation_steps
+        'calculation_steps': calculation_steps,
+        'tramos_equations': tramos_equations # Add equations by tramos
     }
     return results

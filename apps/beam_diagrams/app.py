@@ -146,12 +146,27 @@ def main():
                     else:
                          st.write(step) # Fallback for other types
 
-            # Display Final Equations Clearly
-            st.markdown("**Ecuaciones Finales:**")
-            if 'shear_eq' in results:
-                st.latex(f"V(x) = {sympy.latex(results['shear_eq'])}")
-            if 'moment_eq' in results:
-                st.latex(f"M(x) = {sympy.latex(results['moment_eq'])}")
+            # Display Equations in Two Formats
+            st.markdown("**Ecuaciones:**")
+            
+            # Ecuaciones por Tramos (Student Format)
+            with st.expander("Ver Ecuaciones por Tramos", expanded=True):
+                st.markdown("Estas son las ecuaciones divididas por tramos, como se resuelve tradicionalmente:")
+                if 'tramos_equations' in results:
+                    for i, tramo in enumerate(results['tramos_equations'], 1):
+                        st.markdown(f"**Tramo {i}** ({tramo['interval']})")
+                        st.latex(tramo['V_eq'])
+                        st.latex(tramo['M_eq'])
+                else:
+                    st.warning("No se pudieron generar las ecuaciones por tramos.")
+
+            # Ecuaciones Generales (Mathematical Format)
+            with st.expander("Ver Ecuaciones Generales", expanded=False):
+                st.markdown("Estas son las ecuaciones generales usando funciones matemáticas:")
+                if 'shear_eq' in results:
+                    st.latex(f"V(x) = {sympy.latex(results['shear_eq'])}")
+                if 'moment_eq' in results:
+                    st.latex(f"M(x) = {sympy.latex(results['moment_eq'])}")
 
             # Display Diagrams
             st.subheader("📈 Diagramas Resultantes")
